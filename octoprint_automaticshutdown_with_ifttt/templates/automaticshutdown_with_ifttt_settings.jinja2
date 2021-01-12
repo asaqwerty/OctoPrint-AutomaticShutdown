@@ -1,0 +1,54 @@
+<form class="form-horizontal">
+
+    <h4>General</h4>
+    <div class="control-group">
+        <label class="control-label">Opening - URL</label>
+        <div class="controls">
+        <p>Currently this script only supports http://lab.grapeot.me/ifttt/delay</p>
+            <div class="input-append">
+                <input type="text" class="" data-bind="value: settings.plugins.automaticshutdown_with_ifttt.iftttURL">
+            </div>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">Event Trigger</label>
+        <div class="controls">
+            <div class="input-append">
+                <input type="text" class="" data-bind="value: settings.plugins.automaticshutdown_with_ifttt.eventTrigger">
+            </div>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">Trigger Delay</label>
+        <div class="controls">
+            <div class="input-append">
+                <input type="number" class="input-mini text-right" data-bind="value: settings.plugins.automaticshutdown_with_ifttt.triggerDelay">
+                <span class="add-on">Minutes</span>
+            </div>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">IFTTT Key</label>
+        <div class="controls">
+            <div class="input-append">
+                <input type="text" class="" data-bind="value: settings.plugins.automaticshutdown_with_ifttt.iftttKey">
+            </div>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">Cancel Timeout</label>
+        <div class="controls">
+            <div class="input-append">
+                <input type="number" class="input-mini text-right" data-bind="value: settings.plugins.automaticshutdown_with_ifttt.abortTimeout">
+                <span class="add-on">sec</span>
+            </div>
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="controls">
+            <label class="checkbox">
+            <input type="checkbox" checked data-bind="checked: settings.plugins.automaticshutdown_with_ifttt.rememberCheckBox"> Remember the value of "Shutdown after print finishes"
+            </label>
+        </div>
+    </div>
+</form>

@@ -7,9 +7,11 @@ from octoprint.util import RepeatedTimer
 from octoprint.events import eventManager, Events
 import octoprint.timelapse
 from flask import make_response
+#from cs50 import get_string
 import time
+import requests
 
-class AutomaticshutdownPlugin(octoprint.plugin.TemplatePlugin,
+class automaticshutdown_with_iftttPlugin(octoprint.plugin.TemplatePlugin,
 							  octoprint.plugin.AssetPlugin,
 							  octoprint.plugin.SimpleApiPlugin,
 							  octoprint.plugin.EventHandlerPlugin,
@@ -18,6 +20,10 @@ class AutomaticshutdownPlugin(octoprint.plugin.TemplatePlugin,
 
 	def __init__(self):
 				self.abortTimeout = 0
+				self.iftttURL = None
+				self.eventTrigger = None
+				self.triggerDelay = 0
+				self.iftttKey = None
 				self.rememberCheckBox = False
 				self.lastCheckBoxValue = False
 				self._automatic_shutdown_enabled = False
@@ -26,6 +32,18 @@ class AutomaticshutdownPlugin(octoprint.plugin.TemplatePlugin,
 				self._wait_for_timelapse_timer = None
 
 	def initialize(self):
+			self.iftttURL = self._settings.get(["iftttURL"])
+			self._logger.debug("iftttURL: %s" % self.iftttURL)
+
+			self.eventTrigger = self._settings.get(["eventTrigger"])
+			self._logger.debug("eventTrigger: %s" % self.eventTrigger)
+
+			self.triggerDelay = self._settings.get_int(["triggerDelay"])
+			self._logger.debug("triggerDelay: %s" % self.triggerDelay)
+
+			self.iftttKey = self._settings.get(["iftttKey"])
+			self._logger.debug("iftttKey: %s" % self.iftttKey)
+
 			self.abortTimeout = self._settings.get_int(["abortTimeout"])
 			self._logger.debug("abortTimeout: %s" % self.abortTimeout)
 
@@ -38,11 +56,11 @@ class AutomaticshutdownPlugin(octoprint.plugin.TemplatePlugin,
 					self._automatic_shutdown_enabled = self.lastCheckBoxValue
 
 	def get_assets(self):
-		return dict(js=["js/automaticshutdown.js"])
+		return dict(js=["js/automaticshutdown_with_ifttt.js"])
 
 	def get_template_configs(self):
 		return [dict(type="sidebar",
-			name="Automatic Shutdown",
+			name="Automatic Shutdown with IFTTT",
 			custom_bindings=False,
 			icon="power-off"),
 						dict(type="settings", custom_bindings=False)]
@@ -82,12 +100,12 @@ class AutomaticshutdownPlugin(octoprint.plugin.TemplatePlugin,
 								self._settings.save()
 								eventManager().fire(Events.SETTINGS_UPDATED)
 
-				self._plugin_manager.send_plugin_message(self._identifier, dict(automaticShutdownEnabled=self._automatic_shutdown_enabled, type="timeout", timeout_value=self._timeout_value))
+				self._plugin_manager.send_plugin_message(self._identifier, dict(automaticshutdown_with_iftttEnabled=self._automatic_shutdown_enabled, type="timeout", timeout_value=self._timeout_value))
 
 	def on_event(self, event, payload):
 
 		if event == Events.CLIENT_OPENED:
-				self._plugin_manager.send_plugin_message(self._identifier, dict(automaticShutdownEnabled=self._automatic_shutdown_enabled, type="timeout", timeout_value=self._timeout_value))
+				self._plugin_manager.send_plugin_message(self._identifier, dict(automaticshutdown_with_iftttEnabled=self._automatic_shutdown_enabled, type="timeout", timeout_value=self._timeout_value))
 				return
 
 		if not self._automatic_shutdown_enabled:
@@ -146,7 +164,7 @@ class AutomaticshutdownPlugin(octoprint.plugin.TemplatePlugin,
 					return
 
 			self._timeout_value -= 1
-			self._plugin_manager.send_plugin_message(self._identifier, dict(automaticShutdownEnabled=self._automatic_shutdown_enabled, type="timeout", timeout_value=self._timeout_value))
+			self._plugin_manager.send_plugin_message(self._identifier, dict(automaticshutdown_with_iftttEnabled=self._automatic_shutdown_enabled, type="timeout", timeout_value=self._timeout_value))
 			if self._timeout_value <= 0:
 					if self._wait_for_timelapse_timer is not None:
 							self._wait_for_timelapse_timer.cancel()
@@ -154,7 +172,26 @@ class AutomaticshutdownPlugin(octoprint.plugin.TemplatePlugin,
 					if self._abort_timer is not None:
 							self._abort_timer.cancel()
 							self._abort_timer = None
-					self._shutdown_system()
+					self._ifttt_webhook_post()
+					#self._shutdown_system()
+
+	def _ifttt_webhook_post(self):
+		self._logger.info("Generating the IFTTT Trigger.")
+
+		try:
+			#self._logger.info("_ifttt_webhook iftttURL is: {command}".format(command=self.iftttURL))
+			#self._logger.info("_ifttt_webhook eventTrigger is: {command}".format(command=self.eventTrigger))
+			#self._logger.info("_ifttt_webhook triggerDelay is: {command}".format(command=self.triggerDelay))
+			#self._logger.info("_ifttt_webhook iftttKey is: {command}".format(command=self.iftttKey))
+
+			urlTrigger = self.iftttURL + "?event=" + self.eventTrigger + "&t=" + str(self.triggerDelay) + "&key=" + self.iftttKey
+
+			self._logger.info("Posting to this URL: {command}".format(command=urlTrigger))
+			response = requests.post(urlTrigger)
+		except Exception as e:
+			self._logger.exception("Error when sending post to IFTTT: {error}".format(error=e))
+			return
+		self._shutdown_system()
 
 	def _shutdown_system(self):
 		shutdown_command = self._settings.global_get(["server", "commands", "systemShutdownCommand"])
@@ -168,6 +205,10 @@ class AutomaticshutdownPlugin(octoprint.plugin.TemplatePlugin,
 
 	def get_settings_defaults(self):
 			return dict(
+					iftttURL = "",
+					eventTrigger = "Your_event_name",
+					triggerDelay = 10,
+					iftttKey = "Your_IFTTT_Key",
 					abortTimeout = 10,
 					rememberCheckBox = False,
 					lastCheckBoxValue = False
@@ -176,33 +217,37 @@ class AutomaticshutdownPlugin(octoprint.plugin.TemplatePlugin,
 	def on_settings_save(self, data):
 			octoprint.plugin.SettingsPlugin.on_settings_save(self, data)
 
+			self.iftttURL = self._settings.get_string(["iftttURL"])
+			self.eventTrigger = self._settings.get_string(["eventTrigger"])
+			self.triggerDelay = self._settings.get_int(["triggerDelay"])
+			self.iftttKey = self._settings.get_string(["iftttKey"])
 			self.abortTimeout = self._settings.get_int(["abortTimeout"])
 			self.rememberCheckBox = self._settings.get_boolean(["rememberCheckBox"])
 			self.lastCheckBoxValue = self._settings.get_boolean(["lastCheckBoxValue"])
 
 	def get_update_information(self):
 			return dict(
-					automaticshutdown=dict(
-					displayName="Automatic Shutdown",
+					automaticshutdown_with_ifttt=dict(
+					displayName="Automatic Shutdown with IFTTT",
 					displayVersion=self._plugin_version,
 
 					# version check: github repository
 					type="github_release",
-					user="DeltaMaker",
-					repo="OctoPrint-AutomaticShutdown",
+					user="asqwerty",
+					repo="OctoPrint-automaticshutdown_with_ifttt",
 					current=self._plugin_version,
 
 					# update method: pip w/ dependency links
-					pip="https://github.com/DeltaMaker/OctoPrint-AutomaticShutdown/archive/{target_version}.zip"
+					pip="https://github.com/asaqwerty/OctoPrint-automaticshutdown_with_ifttt/archive/{target_version}.zip"
 			)
 	)
 
-__plugin_name__ = "Automatic Shutdown"
+__plugin_name__ = "Automatic Shutdown with IFTTT"
 __plugin_pythoncompat__ = ">=2.7,<4"
 
 def __plugin_load__():
 	global __plugin_implementation__
-	__plugin_implementation__ = AutomaticshutdownPlugin()
+	__plugin_implementation__ = automaticshutdown_with_iftttPlugin()
 
 	global __plugin_hooks__
 	__plugin_hooks__ = {

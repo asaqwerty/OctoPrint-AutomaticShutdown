@@ -1,13 +1,13 @@
-# Translations template for OctoPrint-AutomaticShutdown.
+# Translations template for OctoPrint-automaticshutdown_with_ifttt.
 # Copyright (C) 2015 The OctoPrint Project
 # This file is distributed under the same license as the
-# OctoPrint-AutomaticShutdown project.
+# OctoPrint-automaticshutdown_with_ifttt project.
 # Nicanor Romero Venier nicanor.romerovenier@bq.com, 2015.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: OctoPrint-AutomaticShutdown 0.1.0\n"
+"Project-Id-Version: OctoPrint-automaticshutdown_with_ifttt 0.1.0\n"
 "Report-Msgid-Bugs-To: i18n@octoprint.org\n"
 "POT-Creation-Date: 2015-08-26 12:06+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
@@ -18,15 +18,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.0\n"
 
-#: octoprint_automaticshutdown/static/js/automaticshutdown.js:7
+#: octoprint_automaticshutdown_with_ifttt/static/js/automaticshutdown_with_ifttt.js:7
 msgid "Shutting down in "
 msgstr ""
 
-#: octoprint_automaticshutdown/static/js/automaticshutdown.js:9
+#: octoprint_automaticshutdown_with_ifttt/static/js/automaticshutdown_with_ifttt.js:9
 msgid "System Shutdown"
 msgstr ""
 
-#: octoprint_automaticshutdown/templates/automaticshutdown_sidebar.jinja2:4
+#: octoprint_automaticshutdown_with_ifttt/templates/automaticshutdown_with_ifttt_sidebar.jinja2:4
 msgid "Shutdown after print finishes"
 msgstr ""
 

@@ -1,9 +1,9 @@
 $(function() {
-    function AutomaticShutdownViewModel(parameters) {
+    function automaticshutdown_with_iftttViewModel(parameters) {
         var self = this;
 
         self.loginState = parameters[0];
-        self.automaticShutdownEnabled = ko.observable();
+        self.automaticshutdown_with_iftttEnabled = ko.observable();
 
         // Hack to remove automatically added Cancel button
         // See https://github.com/sciactive/pnotify/issues/141
@@ -35,10 +35,10 @@ $(function() {
             }
         };
 
-        self.onAutomaticShutdownEvent = function() {
-            if (self.automaticShutdownEnabled()) {
+        self.onautomaticshutdown_with_iftttEvent = function() {
+            if (self.automaticshutdown_with_iftttEnabled()) {
                 $.ajax({
-                    url: API_BASEURL + "plugin/automaticshutdown",
+                    url: API_BASEURL + "plugin/automaticshutdown_with_ifttt",
                     type: "POST",
                     dataType: "json",
                     data: JSON.stringify({
@@ -48,7 +48,7 @@ $(function() {
                 })
             } else {
                 $.ajax({
-                    url: API_BASEURL + "plugin/automaticshutdown",
+                    url: API_BASEURL + "plugin/automaticshutdown_with_ifttt",
                     type: "POST",
                     dataType: "json",
                     data: JSON.stringify({
@@ -59,14 +59,14 @@ $(function() {
             }
         }
 
-        self.automaticShutdownEnabled.subscribe(self.onAutomaticShutdownEvent, self);
+        self.automaticshutdown_with_iftttEnabled.subscribe(self.onautomaticshutdown_with_iftttEvent, self);
 
         self.onDataUpdaterPluginMessage = function(plugin, data) {
-            if (plugin != "automaticshutdown") {
+            if (plugin != "automaticshutdown_with_ifttt") {
                 return;
             }
 
-            self.automaticShutdownEnabled(data.automaticShutdownEnabled);
+            self.automaticshutdown_with_iftttEnabled(data.automaticshutdown_with_iftttEnabled);
 
             if (data.type == "timeout") {
                 if ((data.timeout_value != null) && (data.timeout_value > 0)) {
@@ -88,7 +88,7 @@ $(function() {
 
        self.shutdownNow = function() {
             $.ajax({
-                url: API_BASEURL + "plugin/automaticshutdown",
+                url: API_BASEURL + "plugin/automaticshutdown_with_ifttt",
                 type: "POST",
                 dataType: "json",
                 data: JSON.stringify({
@@ -102,7 +102,7 @@ $(function() {
             self.timeoutPopup.remove();
             self.timeoutPopup = undefined;
             $.ajax({
-                url: API_BASEURL + "plugin/automaticshutdown",
+                url: API_BASEURL + "plugin/automaticshutdown_with_ifttt",
                 type: "POST",
                 dataType: "json",
                 data: JSON.stringify({
@@ -114,8 +114,8 @@ $(function() {
     }
 
     OCTOPRINT_VIEWMODELS.push([
-        AutomaticShutdownViewModel,
+        automaticshutdown_with_iftttViewModel,
         ["loginStateViewModel"],
-        document.getElementById("sidebar_plugin_automaticshutdown")
+        document.getElementById("sidebar_plugin_automaticshutdown_with_ifttt")
     ]);
 });

@@ -1,19 +1,16 @@
-# OctoPrint Automatic Shutdown
+# OctoPrint Automatic Shutdown with IFTTT
 
-This OctoPrint plugin enables the system to be automatically shut down after a print is finished.
+This OctoPrint plugin enables the system to be automatically sent a IFTTT Webhook Trigger then shut down after a print is finished.
 
-The user can enable automatic shutdown for each print by using a checkbox in the sidebar.  Additionally, the user can 
-trigger a shutdown by using the "shutdown now" button.  This is useful for non-admin users, who do not have access to
-the system menu.
+The user can enable automatic shutdown and IFTTT Trigger for each print by using a checkbox in the sidebar.  Additionally, the user can trigger a shutdown by using the "shutdown now" button.  This is useful for non-admin users, who do not have access to the system menu.
 
 ![Sidebar](/docs/screenshot.png?raw=true)
 
 ## Setup
 
-Install via the bundled [Plugin Manager](https://github.com/foosel/OctoPrint/wiki/Plugin:-Plugin-Manager)
-or manually using this URL:
+Install manually using this URL:
 
-    https://github.com/DeltaMaker/OctoPrint-AutomaticShutdown/archive/master.zip
+    URL Here
 
 ## Configuration
 

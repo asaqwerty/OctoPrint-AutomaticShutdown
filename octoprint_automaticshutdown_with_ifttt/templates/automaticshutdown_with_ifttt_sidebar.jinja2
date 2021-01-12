@@ -1,6 +1,6 @@
-<div id="sidebar_plugin_automaticshutdown" class="input-group">
+<div id="sidebar_plugin_automaticshutdown_with_ifttt" class="input-group">
 	<label class="checkbox">
-		<input type="checkbox" data-bind="enable: loginState.isUser(), checked: automaticShutdownEnabled">
+		<input type="checkbox" data-bind="enable: loginState.isUser(), checked: automaticshutdown_with_iftttEnabled">
 		{{ _('Shutdown after print finishes') }}
 	</label>
 	<button class="btn" id="shutdown_now" data-bind="enable: loginState.isUser(), click: shutdownNow">
